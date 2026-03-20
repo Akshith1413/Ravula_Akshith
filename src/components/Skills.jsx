@@ -386,40 +386,57 @@ function CircularMeter({ level, color, size = 56 }) {
   const offset = circumference - (level / 100) * circumference;
 
   return (
-    <svg width={size} height={size} className="skills-circular-meter">
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke="rgba(255,255,255,0.06)"
-        strokeWidth={3}
+    <div style={{ position: 'relative', width: size, height: size }}>
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        style={{
+          position: 'absolute',
+          inset: -4,
+          borderRadius: '50%',
+          border: `1px dashed ${color}66`,
+          opacity: 0.6
+        }}
       />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke={color}
-        strokeWidth={3}
-        strokeDasharray={circumference}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        style={{ transition: 'stroke-dashoffset 1s ease, stroke 0.5s ease' }}
-      />
-      <text
-        x={size / 2}
-        y={size / 2}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize={size * 0.24}
-        fontWeight="700"
-        fill="white"
-      >
-        {level}
-      </text>
-    </svg>
+      <svg width={size} height={size} className="skills-circular-meter" style={{ filter: `drop-shadow(0 0 6px ${color}55)` }}>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth={3}
+        />
+        <motion.circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={3}
+          strokeDasharray={circumference}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          strokeLinecap="round"
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+        <motion.text
+          x={size / 2}
+          y={size / 2}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontSize={size * 0.24}
+          fontWeight="700"
+          fill="white"
+          initial={{ opacity: 0, scale: 0, rotate: -45 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ duration: 0.8, delay: 0.6, type: "spring", bounce: 0.6 }}
+        >
+          {level}
+        </motion.text>
+      </svg>
+    </div>
   );
 }
 
@@ -428,14 +445,51 @@ function CircularMeter({ level, color, size = 56 }) {
    ═══════════════════════════════════════════ */
 function SkillBar({ level, color }) {
   return (
-    <div className="skills-bar-track">
+    <div className="skills-bar-track" style={{ position: 'relative', overflow: 'hidden', height: '6px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)' }}>
       <motion.div
         className="skills-bar-fill"
         initial={{ width: 0 }}
         animate={{ width: `${level}%` }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        style={{ background: `linear-gradient(90deg, ${color}, ${color}88)` }}
-      />
+        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+        style={{ 
+          background: `linear-gradient(90deg, ${color}33, ${color})`, 
+          position: 'relative', 
+          overflow: 'visible',
+          height: '100%',
+          borderRadius: '4px',
+          boxShadow: `0 0 12px ${color}88`
+        }}
+      >
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '6px',
+            height: '6px',
+            borderRadius: '50%',
+            background: '#ffffff',
+            boxShadow: `0 0 10px 3px ${color}`
+          }}
+        />
+        <motion.div
+          initial={{ opacity: 0, x: '-100%' }}
+          animate={{ opacity: [0, 1, 0], x: ['-100%', '300%'] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            width: '40px',
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)',
+            transform: 'skewX(-20deg)'
+          }}
+        />
+      </motion.div>
     </div>
   );
 }
@@ -501,7 +555,8 @@ const Skills = () => {
         <motion.div
           className="skills-header"
           initial={{ opacity: 0, y: -30 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <h2 className="skills-title">
@@ -516,23 +571,46 @@ const Skills = () => {
         <motion.div
           className="skills-category-tabs"
           initial={{ opacity: 0, y: 20 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          {categoryKeys.map((catKey) => (
-            <button
-              key={catKey}
-              className={`skills-tab ${activeCategory === catKey ? 'active' : ''}`}
-              onClick={() => handleCategoryChange(catKey)}
-              style={{
-                '--tab-color': skillCategories[catKey].color,
-                '--tab-color-b': skillCategories[catKey].colorB,
-              }}
-            >
-              <span className="skills-tab-icon">{skillCategories[catKey].icon}</span>
-              <span className="skills-tab-label">{skillCategories[catKey].title}</span>
-            </button>
-          ))}
+          {categoryKeys.map((catKey) => {
+            const isActive = activeCategory === catKey;
+            return (
+              <button
+                key={catKey}
+                className={`skills-tab ${isActive ? 'active' : ''}`}
+                onClick={() => handleCategoryChange(catKey)}
+                style={{
+                  '--tab-color': skillCategories[catKey].color,
+                  '--tab-color-b': skillCategories[catKey].colorB,
+                  position: 'relative'
+                }}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabOutline"
+                    className="absolute inset-0 rounded-xl pointer-events-none"
+                    style={{
+                      background: `linear-gradient(135deg, ${skillCategories[catKey].color}25, ${skillCategories[catKey].colorB}25)`,
+                      border: `1px solid ${skillCategories[catKey].color}60`,
+                      boxShadow: `0 0 20px 0 ${skillCategories[catKey].color}33 inset, 0 0 20px 0 ${skillCategories[catKey].color}33`
+                    }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  />
+                )}
+                <motion.span 
+                  className="skills-tab-icon relative z-10"
+                  animate={isActive ? { scale: [1, 1.3, 1], rotate: [0, -15, 10, 0] } : { scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                >
+                  {skillCategories[catKey].icon}
+                </motion.span>
+                <span className="skills-tab-label relative z-10">{skillCategories[catKey].title}</span>
+              </button>
+            );
+          })}
         </motion.div>
 
         {/* Main content area */}
@@ -540,39 +618,62 @@ const Skills = () => {
           <motion.div
             key={activeCategory}
             className="skills-content-area"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 40, scale: 0.95, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -30, scale: 0.95, filter: 'blur(10px)' }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* Category Header Card */}
-            <div className="skills-hero-card" style={{ '--cat-color': data.color, '--cat-color-b': data.colorB }}>
+            <motion.div 
+              className="skills-hero-card" 
+              style={{ '--cat-color': data.color, '--cat-color-b': data.colorB }}
+              initial={{ opacity: 0, scale: 0.85, filter: 'blur(16px)', y: 40 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1, 
+                filter: 'blur(0px)', 
+                y: [0, -8, 0]
+              }}
+              transition={{ 
+                duration: 0.8, 
+                ease: [0.16, 1, 0.3, 1],
+                y: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+              }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+            >
               <div className="skills-hero-left">
-                <span className="skills-hero-icon">{data.icon}</span>
+                <motion.span 
+                  className="skills-hero-icon"
+                  initial={{ rotate: -180, scale: 0, opacity: 0 }}
+                  animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', damping: 10, stiffness: 120, delay: 0.2 }}
+                >
+                  {data.icon}
+                </motion.span>
                 <div>
                   <h3 className="skills-hero-title">{data.title}</h3>
                   <p className="skills-hero-desc">{data.description}</p>
                 </div>
               </div>
               <div className="skills-hero-stats">
-                <div className="skills-stat-box">
+                <motion.div className="skills-stat-box" initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.25, type: 'spring' }}>
                   <span className="skills-stat-value">{data.skills.length}</span>
                   <span className="skills-stat-label">Skills</span>
-                </div>
-                <div className="skills-stat-box">
+                </motion.div>
+                <motion.div className="skills-stat-box" initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.3, type: 'spring' }}>
                   <span className="skills-stat-value">{avgLevel}%</span>
                   <span className="skills-stat-label">Avg Level</span>
-                </div>
-                <div className="skills-stat-box">
+                </motion.div>
+                <motion.div className="skills-stat-box" initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.35, type: 'spring' }}>
                   <span className="skills-stat-value">{data.stats.projects}</span>
                   <span className="skills-stat-label">Projects</span>
-                </div>
-                <div className="skills-stat-box highlight" style={{ '--cat-color': data.color }}>
+                </motion.div>
+                <motion.div className="skills-stat-box highlight" style={{ '--cat-color': data.color }} initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.4, type: 'spring' }}>
                   <span className="skills-stat-value">{topSkill.icon} {topSkill.level}%</span>
                   <span className="skills-stat-label">Top: {topSkill.name}</span>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Skills Grid — full-width responsive */}
             <div className="skills-grid">
@@ -580,9 +681,22 @@ const Skills = () => {
                 <motion.div
                   key={skill.name}
                   className={`skills-card ${hoveredSkill === i ? 'hovered' : ''}`}
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  initial={{ opacity: 0, y: 40, scale: 0.9 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: i * 0.06, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ 
+                    y: -8, 
+                    scale: 1.02,
+                    boxShadow: `0 20px 40px -10px ${data.color}55`,
+                    borderColor: `${data.color}88`
+                  }}
+                  transition={{ 
+                    delay: i * 0.04, 
+                    type: "spring", 
+                    stiffness: 150, 
+                    damping: 12,
+                    mass: 0.6
+                  }}
+                  style={{ '--card-color': data.color }}
                   onMouseEnter={(e) => {
                     setHoveredSkill(i);
                   }}
@@ -594,7 +708,6 @@ const Skills = () => {
                     e.currentTarget.style.setProperty('--glow-y', `${y}%`);
                   }}
                   onMouseLeave={() => setHoveredSkill(null)}
-                  style={{ '--card-color': data.color }}
                 >
                   <div className="skills-card-glow" />
                   <div className="skills-card-top">
@@ -620,9 +733,15 @@ const Skills = () => {
                   <motion.span
                     key={tech}
                     className="skills-related-tag"
-                    initial={{ opacity: 0, scale: 0.7 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 + i * 0.04 }}
+                    initial={{ opacity: 0, scale: 0.5, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    transition={{ 
+                      delay: 0.4 + i * 0.03,
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 15
+                    }}
                     style={{ '--tag-color': data.color }}
                   >
                     {tech}
