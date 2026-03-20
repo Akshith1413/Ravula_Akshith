@@ -380,10 +380,10 @@ const Hero = () => {
         </Canvas>
       </div>
 
-      <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 text-center">
+      <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 text-center pb-12 pt-16">
         
         <motion.div 
-          className="text-2xl md:text-3xl font-light text-gray-300 mb-4"
+          className="text-xl md:text-3xl font-light text-cyan-100/80 mb-4 mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.8 }}
@@ -393,7 +393,7 @@ const Hero = () => {
 
         <h1 
           ref={titleRef}
-          className="text-6xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 mb-2"
+          className="text-6xl md:text-7xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-blue-500 mb-4 pt-2 pb-4 pr-2"
           style={{
             transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 10}px)`,
           }}
@@ -401,16 +401,15 @@ const Hero = () => {
           Ravula Akshith
         </h1>
 
-        <div className="h-20 md:h-24 overflow-hidden relative mb-6 flex items-center justify-center">
+        <div className="h-24 md:h-32 overflow-hidden relative mb-6 flex items-center justify-center w-full z-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentWord}
-              className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500"
-              initial={{ y: 50, opacity: 0 }}
+              className="text-3xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-400 via-purple-400 to-pink-500 py-2 leading-normal selection:bg-purple-500/30 relative z-20"
+              initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -50, opacity: 0 }}
+              exit={{ y: -40, opacity: 0 }}
               transition={{ duration: 0.5 }}
-              style={{ lineHeight: '1.2' }}
             >
               {words[currentWord]}
             </motion.div>
@@ -419,7 +418,7 @@ const Hero = () => {
 
         <motion.p
           ref={subtitleRef}
-          className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-8"
+          className="text-xl md:text-2xl text-purple-100/90 max-w-2xl mx-auto mb-8 font-medium"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 1 }}
@@ -440,7 +439,7 @@ const Hero = () => {
 
         <motion.a
           href="#contact"
-          className="relative px-8 py-3 rounded-full font-medium overflow-hidden group"
+          className="relative inline-flex items-center justify-center px-12 py-5 rounded-full font-bold text-xl overflow-hidden group mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.5 }}
