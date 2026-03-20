@@ -22,22 +22,22 @@ const TimelineItem = ({ year, title, description, company, isLast, index }) => {
   }, []);
 
   return (
-    <div 
+    <div
       className={`timeline-item-container ${isVisible ? 'animate-in' : ''}`}
       ref={itemRef}
       style={{ animationDelay: `${index * 0.2}s` }}
     >
       <div className={`timeline-line ${isLast ? 'timeline-line-last' : ''}`} />
-      
+
       <div className="timeline-dot-container">
         <div className="timeline-dot" />
         <div className="timeline-dot-hover-effect" />
       </div>
-      
+
       <div className="timeline-content">
-        
+
         <div className="timeline-content-glow" />
-        
+
         <div className="timeline-content-inner">
           <div className="timeline-header">
             <h3 className="timeline-title">{title}</h3>
@@ -56,28 +56,52 @@ const TimelineItem = ({ year, title, description, company, isLast, index }) => {
 const Timeline = () => {
   const timelineData = [
     {
+      year: 'Jan 2026 - Present',
+      title: 'Full Stack Web Development Intern',
+      company: 'CodTech IT Solutions',
+      description: 'Developing and deploying scalable full-stack applications. Collaborating with cross-functional teams to build new features, optimize performance, and enhance user experience using modern web technologies.'
+    },
+    {
+      year: 'Dec 2025 - Present',
+      title: 'Web Development Intern',
+      company: 'Technex IIT (BHU) Varanasi',
+      description: "Contributing to the development of the web portal for Asia's oldest techno-management fest. Building interactive frontend components and reliable backend APIs to support thousands of concurrent users."
+    },
+    {
+      year: 'Jun 2025 - Dec 2025',
+      title: 'Full Stack Web Development Intern',
+      company: 'Innovate',
+      description: 'Built responsive client-side applications and robust server-side APIs. Integrated database solutions and improved application load times by optimizing API queries and asset delivery.'
+    },
+    {
+      year: 'Jan 2025 - Jun 2025',
+      title: 'Full Stack Development with AI Intern',
+      company: 'Intern Certify',
+      description: 'Integrated AI capabilities into full-stack web applications. Developed intelligent features and data processing pipelines using machine learning models to provide automated insights.'
+    },
+    {
       year: '2024 - Present',
       title: 'App Developer',
       company: 'Intel Iot Club',
       description: 'Leading the development team in creating immersive web experiences using cutting-edge technologies like React, Three.js, and WebGL. Spearheaded the migration to Next.js, improving SEO and performance by 40%.'
     },
     {
-      year: '2023 - 2024',
-      title: 'Web Developer',
-      company: 'Intel Iot Club',
-      description: 'Developed interactive web applications with modern JavaScript frameworks. Implemented GSAP animations that increased user engagement by 25%. Collaborated with designers to create pixel-perfect UIs.'
-    },
-    {
       year: 'May 2024 - July 2024',
       title: 'Web Development Intern',
       company: 'Learnflu',
       description: 'Designed user interfaces and interactive prototypes for clients across various industries. Conducted user research and testing that improved conversion rates by an average of 18% across projects.'
+    },
+    {
+      year: '2023 - 2024',
+      title: 'Web Developer',
+      company: 'Intel Iot Club',
+      description: 'Developed interactive web applications with modern JavaScript frameworks. Implemented GSAP animations that increased user engagement by 25%. Collaborated with designers to create pixel-perfect UIs.'
     }
   ];
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
-      <style jsx>{`
+      <style>{`
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
 
         /* Custom animations */
@@ -289,7 +313,7 @@ const Timeline = () => {
           line-height: 1.625;
         }
       `}</style>
-      
+
       <section className="timeline-section">
         <div className="timeline-header-container">
           <h2 className="timeline-main-title">Professional Journey</h2>
@@ -297,14 +321,14 @@ const Timeline = () => {
             My career path through the years, highlighting key positions and achievements
           </p>
         </div>
-        
+
         <div className="timeline-items-wrapper">
-          
+
           <div className="timeline-decorative-circle-1" />
           <div className="timeline-decorative-circle-2" />
-          
+
           {timelineData.map((item, index) => (
-            <TimelineItem 
+            <TimelineItem
               key={index}
               {...item}
               index={index}
