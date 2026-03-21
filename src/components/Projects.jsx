@@ -926,6 +926,114 @@ const Projects = () => {
       image: "/icons/ar.png",
       liveUrl: "#",
       codeUrl: "#"
+    },
+    {
+      id: 9,
+      title: "DevConnect",
+      description: "Professional social networking platform for developers to collaborate and share projects",
+      details: "Full-stack MERN application featuring real-time messaging with Socket.io, project discovery with advanced filtering, and user profile management. Includes a responsive UI built with Tailwind CSS.",
+      tags: ["React", "Node.js", "MongoDB", "Socket.io", "Tailwind"],
+      category: 'fullstack',
+      features: [
+        "Real-time chatting with Socket.io",
+        "Project sharing & collaboration",
+        "Advanced tech-stack filtering",
+        "User profiles & networking",
+        "Secure JWT authentication"
+      ],
+      image: "/icons/react.jpg",
+      liveUrl: "#",
+      codeUrl: "#"
+    },
+    {
+      id: 10,
+      title: "DisasterHelper",
+      description: "AI-powered emergency preparedness and response platform",
+      details: "Comprehensive disaster management system with real-time tracking, personalized emergency checklists, and automated safety planning driven by AI insights.",
+      tags: ["React", "Node.js", "MongoDB", "AI", "Zustand"],
+      category: 'web',
+      features: [
+        "Real-time disaster tracking",
+        "AI emergency planning",
+        "Resource mapping & locator",
+        "Community safety dashboard",
+        "Emergency supply checklists"
+      ],
+      image: "/icons/mongodb.png",
+      liveUrl: "#",
+      codeUrl: "#"
+    },
+    {
+      id: 11,
+      title: "QuickShop",
+      description: "Premium high-performance E-commerce platform with glassmorphism design",
+      details: "Modern shopping experience built with Next.js 14 and Supabase. Features a stunning 3D-inspired UI, liquid blob animations, and optimized checkout flow.",
+      tags: ["Next.js", "Supabase", "Tailwind", "Framer Motion"],
+      category: 'web',
+      features: [
+        "Premium Glassmorphism UI",
+        "3D product interactions",
+        "Supabase real-time DB",
+        "Dynamic category filtering",
+        "High-performance Vercel deploy"
+      ],
+      image: "/icons/eccommerce.png",
+      liveUrl: "#",
+      codeUrl: "#"
+    },
+    {
+      id: 12,
+      title: "RailVista",
+      description: "India's advanced railway booking and live tracking platform",
+      details: "High-speed railway experience with real-time GPS tracking, AI-powered route recommendations, and a premium interactive booking interface.",
+      tags: ["HTML5", "CSS3", "JavaScript", "GSAP"],
+      category: 'web',
+      features: [
+        "Real-time GPS tracking",
+        "AI Route Recommendations",
+        "Interactive Departure Boards",
+        "Premium Booking Interface",
+        "High-speed SVG Animations"
+      ],
+      image: "/icons/embeddedvehcile.png",
+      liveUrl: "#",
+      codeUrl: "#"
+    },
+    {
+      id: 13,
+      title: "Virtual Interactive Keyboard",
+      description: "Fully functional, interactive virtual keyboard with real-time feedback",
+      details: "Responsive virtual keyboard featuring real-time key highlighting, state management (Caps Lock), and smooth CSS transitions. Built with pure JavaScript for maximum performance.",
+      tags: ["JavaScript", "HTML5", "CSS3", "DOM"],
+      category: 'uiux',
+      features: [
+        "Real-time key highlighting",
+        "Caps lock state tracking",
+        "Smooth CSS transitions",
+        "Interactive audio feedback",
+        "No external dependencies"
+      ],
+      image: "/icons/ux.png",
+      liveUrl: "#",
+      codeUrl: "#"
+    },
+    {
+      id: 14,
+      title: "Hanuven",
+      description: "Enterprise service booking and management ecosystem",
+      details: "Full-scale solution featuring a Next.js portal and Capacitor mobile apps. Includes real-time service tracking, automated email workflows, and Supabase integration.",
+      tags: ["Next.js", "Supabase", "Capacitor", "Node.js"],
+      category: 'fullstack',
+      features: [
+        "Cross-platform Web/Mobile",
+        "Real-time service tracking",
+        "Automated Email Workflows",
+        "Supabase Auth & Database",
+        "Enterprise-grade Security"
+      ],
+      image: "/icons/postgresql.jpg",
+      liveUrl: "#",
+      codeUrl: "#"
     }
   ];
 
