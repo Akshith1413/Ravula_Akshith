@@ -25,15 +25,15 @@ const Background = () => {
     canvas.width = 32;
     canvas.height = 32;
     const ctx = canvas.getContext('2d');
-    
+
     const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
     gradient.addColorStop(0, 'rgba(59, 130, 246, 1)');
     gradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.5)');
     gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-    
+
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 32, 32);
-    
+
     return new THREE.CanvasTexture(canvas);
   }, []);
 
@@ -60,13 +60,13 @@ const Background = () => {
           <icosahedronGeometry args={[1.2, 1]} />
           <meshBasicMaterial color="#6366f1" wireframe={true} transparent opacity={0.6} />
         </mesh>
-        
+
         {/* Inner solid with emissive glow */}
         <mesh position={[0, 0, -2]} scale={0.7}>
           <icosahedronGeometry args={[1.2, 0]} />
-          <meshStandardMaterial 
+          <meshStandardMaterial
             color="#8b5cf6"
-            emissive="#a78bfa" 
+            emissive="#a78bfa"
             emissiveIntensity={0.8}
             transparent
             opacity={0.4}
@@ -76,9 +76,9 @@ const Background = () => {
         {/* Rotating ring around the shape */}
         <mesh position={[0, 0, -2]} rotation={[Math.PI / 4, 0, 0]}>
           <torusGeometry args={[1.8, 0.05, 16, 100]} />
-          <meshStandardMaterial 
+          <meshStandardMaterial
             color="#60a5fa"
-            emissive="#3b82f6" 
+            emissive="#3b82f6"
             emissiveIntensity={0.6}
           />
         </mesh>
@@ -93,17 +93,17 @@ const Background = () => {
       particles.current.rotation.y = t * 0.1;
       particles.current.rotation.x = t * 0.06;
     }
-    
+
     if (geometricShapeRef.current) {
       // Complex rotation pattern
       geometricShapeRef.current.rotation.x = t * 0.15;
       geometricShapeRef.current.rotation.y = t * 0.2;
       geometricShapeRef.current.rotation.z = Math.sin(t * 0.3) * 0.2;
-      
+
       // Gentle floating motion
       geometricShapeRef.current.position.y = Math.sin(t * 0.5) * 0.3;
     }
-    
+
     if (group.current) {
       group.current.rotation.y = t * 0.04;
     }
@@ -232,7 +232,7 @@ const DetailModal = ({ type, onClose }) => {
             <X size={24} />
           </button>
         </div>
-        
+
         <div className="modal-body">
           {data.items.map((item, idx) => (
             <div key={idx} className="modal-item">
@@ -245,7 +245,7 @@ const DetailModal = ({ type, onClose }) => {
               </div>
             </div>
           ))}
-          
+
           {/* "More" button for Experience section */}
           {type === 'Experience' && (
             <div style={{
@@ -253,7 +253,7 @@ const DetailModal = ({ type, onClose }) => {
               justifyContent: 'center',
               marginTop: '1.5rem'
             }}>
-              <button 
+              <button
                 onClick={handleRedirectToTimeline}
                 style={{
                   padding: '0.75rem 2rem',
@@ -313,23 +313,23 @@ const About = () => {
           setVisible(true);
         }
       },
-      { 
+      {
         threshold: 0.05,
         rootMargin: '100px'
       }
     );
-    
+
     if (sectionRef.current) {
       obs.observe(sectionRef.current);
     }
-    
+
     return () => obs.disconnect();
   }, []);
 
   /* ---- Optimized mouse parallax ---- */
   useEffect(() => {
     if (isMobile || !imageRef.current) return;
-    
+
     let rafId = null;
     let lastTime = 0;
     const throttleDelay = 16;
@@ -337,7 +337,7 @@ const About = () => {
     const move = (e) => {
       const now = Date.now();
       if (now - lastTime < throttleDelay) return;
-      
+
       lastTime = now;
 
       if (rafId) {
@@ -347,7 +347,7 @@ const About = () => {
       rafId = requestAnimationFrame(() => {
         const x = Math.max(-12, Math.min(12, (e.clientX / window.innerWidth - 0.5) * 20));
         const y = Math.max(-8, Math.min(8, (e.clientY / window.innerHeight - 0.5) * 10));
-        
+
         if (imageRef.current) {
           imageRef.current.style.transform = `translate(${x}px, ${y}px)`;
         }
@@ -440,9 +440,11 @@ const About = () => {
           transition: transform 0.1s ease-out;
         }
 
-        .about-image img {
-          width: 80%;
-          height: 80%;
+        .about-image img,
+        .about-image video {
+          width: 90%;
+          aspect-ratio: 1;
+          object-fit: cover;
           border-radius: 20px;
           box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.3);
           border: 2px solid rgba(99, 102, 241, 0.3);
@@ -742,8 +744,8 @@ const About = () => {
             className="about-canvas"
             dpr={[1, 1.5]}
             camera={{ position: [0, 0, 8], fov: 70 }}
-            gl={{ 
-              powerPreference: 'high-performance', 
+            gl={{
+              powerPreference: 'high-performance',
               antialias: false,
               alpha: true
             }}
@@ -758,7 +760,7 @@ const About = () => {
         <div className={`about-content ${visible ? 'show' : ''}`}>
           {/* IMAGE */}
           <div className="about-image" ref={imageRef}>
-            <img src="/hi.png" alt="Profile" loading="lazy" />
+            <video src="/same.mp4" autoPlay loop muted playsInline></video>
           </div>
 
           {/* TEXT */}

@@ -1,4 +1,108 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, Sparkles } from '@react-three/drei';
+import * as THREE from 'three';
+
+const OrbitingNode = ({ index }) => {
+  const meshRef = useRef();
+  const speed = 0.1 + Math.random() * 0.15; // Decreased speed significantly
+  const radius = 6 + Math.random() * 5;
+  const angleOffset = Math.random() * Math.PI * 2;
+  const axis = useMemo(() => new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), []);
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime() * speed;
+    const x = Math.cos(t + angleOffset) * radius;
+    const y = Math.sin(t + angleOffset) * radius;
+    
+    // Spin around an arbitrary axis smoothly
+    const pos = new THREE.Vector3(x, y, 0);
+    pos.applyAxisAngle(axis, t * 0.2);
+    
+    if (meshRef.current) {
+        meshRef.current.position.copy(pos);
+    }
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[0.15, 16, 16]} />
+      <meshStandardMaterial color="#fff" emissive={index % 2 === 0 ? "#06b6d4" : "#d946ef"} emissiveIntensity={5} toneMapped={false} />
+      <pointLight color={index % 2 === 0 ? "#06b6d4" : "#d946ef"} intensity={2} distance={8} />
+    </mesh>
+  );
+};
+
+const QuantumCore = ({ mousePos }) => {
+  const groupRef = useRef();
+  
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    
+    // Convert screen pixel pos to normalized -1 to 1 safely
+    const normalizedMouseX = mousePos?.x ? (mousePos.x / window.innerWidth) * 2 - 1 : 0;
+    const normalizedMouseY = mousePos?.y ? -(mousePos.y / window.innerHeight) * 2 + 1 : 0;
+
+    if (groupRef.current) {
+        groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, normalizedMouseY * 0.5, 0.05);
+        groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, normalizedMouseX * 0.5 + t * 0.1, 0.05);
+        
+        const scale = 1 + Math.sin(t * 1.5) * 0.05;
+        groupRef.current.scale.set(scale, scale, scale);
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* Outer shell */}
+      <mesh>
+        <icosahedronGeometry args={[4.5, 2]} />
+        <meshBasicMaterial color="#d946ef" wireframe transparent opacity={0.08} blending={THREE.AdditiveBlending} />
+      </mesh>
+      
+      {/* Middle complex shell */}
+      <mesh>
+        <octahedronGeometry args={[3.5, 3]} />
+        <meshStandardMaterial color="#8b5cf6" wireframe transparent opacity={0.25} emissive="#8b5cf6" emissiveIntensity={1} />
+      </mesh>
+
+      {/* Orbiting particles */}
+      {Array.from({ length: 15 }).map((_, i) => (
+        <OrbitingNode key={i} index={i} />
+      ))}
+    </group>
+  );
+};
+
+const BackgroundScene = ({ mousePos }) => {
+  return (
+    <Canvas camera={{ position: [0, 0, 15], fov: 45 }} gl={{ antialias: false, alpha: true }}>
+      <ambientLight intensity={0.2} />
+      
+      {/* Dynamic Starfield / Sparkles */}
+      <Sparkles count={1500} scale={25} size={1.5} speed={0.4} opacity={0.3} color="#d946ef" />
+      <Sparkles count={1000} scale={30} size={2} speed={0.5} opacity={0.2} color="#06b6d4" />
+      
+      <Float speed={1.5} rotationIntensity={0.5} floatIntensity={1}>
+        <QuantumCore mousePos={mousePos} />
+      </Float>
+      
+      {/* Distant nebular glowing spheres */}
+      <Float speed={0.8} floatIntensity={2}>
+        <mesh position={[-12, 6, -20]}>
+          <sphereGeometry args={[6, 32, 32]} />
+          <meshBasicMaterial color="#4c1d95" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
+        </mesh>
+      </Float>
+      <Float speed={1.2} floatIntensity={2}>
+        <mesh position={[14, -8, -25]}>
+          <sphereGeometry args={[8, 32, 32]} />
+          <meshBasicMaterial color="#a21caf" transparent opacity={0.1} blending={THREE.AdditiveBlending} />
+        </mesh>
+      </Float>
+    </Canvas>
+  );
+};
 
 const NeuralNetwork = () => {
   const canvasRef = useRef(null);
@@ -384,12 +488,12 @@ const ProjectCard = ({ project, index }) => {
       >
         {/* Front of card */}
         <div 
-          className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-700/50"
+          className="absolute inset-0 w-full h-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden border border-white/10 flex flex-col group"
           style={{
             backfaceVisibility: 'hidden',
             boxShadow: isHovered 
-              ? '0 15px 30px -8px rgba(6, 182, 212, 0.25), 0 0 60px rgba(6, 182, 212, 0.08)' 
-              : '0 8px 20px -5px rgba(0, 0, 0, 0.25)'
+              ? '0 20px 40px -8px rgba(217, 70, 239, 0.15), 0 0 20px rgba(217, 70, 239, 0.1)' 
+              : '0 8px 32px 0 rgba(0, 0, 0, 0.3)'
           }}
         >
           {/* Health app specific front content */}
@@ -433,28 +537,26 @@ const ProjectCard = ({ project, index }) => {
                 </div>
               </div>
               
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-white mb-2">
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-                    {project.title}
-                  </span>
+              <div className="p-5 flex-1 flex flex-col group">
+                <h3 className="text-xl font-bold mb-2 text-white group-hover:text-fuchsia-300 transition-colors">
+                  {project.title}
                 </h3>
                 <p className="text-gray-400 mb-4 text-sm leading-relaxed line-clamp-2">
                   {project.description}
                 </p>
                 
-                <div className="flex flex-wrap gap-1.5 mb-4">
+                <div className="flex flex-wrap gap-1.5 mb-2 mt-auto">
                   {project.tags.slice(0, 4).map((tag, i) => (
                     <span 
                       key={i}
-                      className="px-2.5 py-1 bg-gray-900/80 backdrop-blur-sm rounded-full text-xs font-medium text-cyan-400 border border-cyan-400/20"
+                      className="px-2.5 py-1 bg-black/50 backdrop-blur-md rounded-full text-xs font-medium text-fuchsia-200 border border-fuchsia-500/30 shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
                 
-                <div className="inline-flex items-center text-cyan-400 font-medium text-sm group">
+                <div className="mt-3 inline-flex items-center text-purple-400 font-medium text-sm group-hover:text-fuchsia-300 transition-colors">
                   <span>Click for details</span>
                   <svg className="w-3.5 h-3.5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -493,7 +595,7 @@ const ProjectCard = ({ project, index }) => {
                   {project.tags.slice(0, 3).map((tag, i) => (
                     <span 
                       key={i}
-                      className="px-2.5 py-1 bg-gray-900/90 backdrop-blur-sm rounded-full text-xs font-medium text-cyan-400 border border-cyan-400/20"
+                      className="px-2.5 py-1 bg-black/50 backdrop-blur-md rounded-full text-xs font-medium text-fuchsia-200 border border-fuchsia-500/30 shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
                     >
                       {tag}
                     </span>
@@ -501,17 +603,15 @@ const ProjectCard = ({ project, index }) => {
                 </div>
               </div>
               
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-white mb-2">
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-                    {project.title}
-                  </span>
+              <div className="p-5 flex-1 flex flex-col group">
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-fuchsia-300 transition-colors">
+                  {project.title}
                 </h3>
                 <p className="text-gray-400 mb-4 text-sm leading-relaxed line-clamp-2">
                   {project.description}
                 </p>
                 
-                <div className="inline-flex items-center text-cyan-400 font-medium text-sm group">
+                <div className="mt-auto inline-flex items-center text-purple-400 font-medium text-sm group-hover:text-fuchsia-300 transition-colors">
                   <span>Click to explore</span>
                   <svg className="w-3.5 h-3.5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -524,11 +624,11 @@ const ProjectCard = ({ project, index }) => {
 
         {/* Back of card */}
         <div 
-          className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-900/98 via-gray-800/98 to-gray-900/98 backdrop-blur-sm rounded-2xl overflow-hidden border border-cyan-400/30 p-5 flex flex-col"
+          className="absolute inset-0 w-full h-full bg-[#0a0516]/95 backdrop-blur-xl rounded-2xl overflow-hidden border border-fuchsia-500/30 p-5 flex flex-col"
           style={{ 
             backfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)',
-            boxShadow: '0 15px 30px -8px rgba(6, 182, 212, 0.3)'
+            boxShadow: '0 15px 30px -8px rgba(217, 70, 239, 0.2)'
           }}
         >
           <div className="flex justify-between items-start mb-4">
@@ -602,7 +702,7 @@ const ProjectCard = ({ project, index }) => {
               href={project.liveUrl} 
               target="_blank"
               rel="noreferrer"
-              className="px-3 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-medium hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 text-center hover:scale-102 shadow-md flex items-center justify-center text-sm"
+              className="px-3 py-2.5 bg-fuchsia-500/10 border border-fuchsia-500/30 text-fuchsia-300 rounded-lg font-medium hover:bg-fuchsia-500/20 transition-all duration-200 text-center hover:scale-102 flex items-center justify-center text-sm shadow-[0_0_15px_rgba(217,70,239,0.1)] hover:shadow-[0_0_20px_rgba(217,70,239,0.2)]"
               onClick={(e) => e.stopPropagation()}
             >
               <svg className="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -614,7 +714,7 @@ const ProjectCard = ({ project, index }) => {
               href={project.codeUrl} 
               target="_blank"
               rel="noreferrer"
-              className="px-3 py-2.5 border border-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 hover:border-cyan-400 hover:text-white transition-all duration-200 text-center hover:scale-102 flex items-center justify-center text-sm"
+              className="px-3 py-2.5 bg-white/5 border border-white/10 text-gray-300 rounded-lg font-medium hover:bg-white/10 hover:text-white transition-all duration-200 text-center hover:scale-102 flex items-center justify-center text-sm"
               onClick={(e) => e.stopPropagation()}
             >
               <svg className="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -644,10 +744,10 @@ const CategoryFilter = ({ activeCategory, setActiveCategory }) => {
       {categories.map((category) => (
         <button
           key={category.id}
-          className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105 shadow-md backdrop-blur-sm ${
+          className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 shadow-md backdrop-blur-sm ${
             activeCategory === category.id
-              ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/10 text-cyan-300 shadow-cyan-500/40 border border-cyan-400'
-              : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/70 border border-gray-700/50 hover:border-cyan-400/40'
+              ? 'bg-fuchsia-500/15 text-fuchsia-300 shadow-[0_0_15px_rgba(217,70,239,0.3)] border border-fuchsia-400/50'
+              : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10 hover:border-fuchsia-400/30'
           }`}
           onClick={() => setActiveCategory(category.id)}
         >
@@ -838,30 +938,10 @@ const Projects = () => {
   return (
     <div 
       ref={containerRef}
-      className="relative min-h-screen py-16 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gray-950"
+      className="relative min-h-screen py-16 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-[#0f172a] via-[#11052c] to-[#050014]"
       onMouseMove={handleMouseMove}
     >
       <style>{`
-        @keyframes ripple {
-          0% {
-            width: 0;
-            height: 0;
-            opacity: 0.4;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.5) 0%, transparent 70%);
-          }
-          100% {
-            width: 180px;
-            height: 180px;
-            opacity: 0;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0) 0%, transparent 70%);
-          }
-        }
-        
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.4); opacity: 0.6; }
-        }
-        
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -874,17 +954,17 @@ const Projects = () => {
         }
         
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.1);
+          background: rgba(255, 255, 255, 0.05);
           border-radius: 10px;
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(6, 182, 212, 0.4);
+          background: rgba(217, 70, 239, 0.4);
           border-radius: 10px;
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(6, 182, 212, 0.6);
+          background: rgba(217, 70, 239, 0.6);
         }
 
         .hover-scale-102:hover {
@@ -892,25 +972,23 @@ const Projects = () => {
         }
       `}</style>
       
-      {/* Background animations */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <NeuralNetwork />
-        <SkillOrbit />
-        <RippleEffect mouseX={mousePos.x} mouseY={mousePos.y} />
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/3 via-transparent to-blue-500/3" />
+      {/* Dynamic 3D Environment */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <BackgroundScene mousePos={mousePos} />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[100px] mix-blend-screen opacity-40"></div>
       </div>
       
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center mb-5 px-4 py-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-400/20 rounded-full text-cyan-400 text-sm font-medium backdrop-blur-sm shadow-lg cursor-pointer" onClick={() => {
+          <div className="inline-flex items-center mb-5 px-4 py-2 bg-white/5 border border-fuchsia-500/20 rounded-full text-fuchsia-300 text-sm font-medium backdrop-blur-sm shadow-[0_0_15px_rgba(217,70,239,0.15)] cursor-pointer hover:bg-white/10 transition-colors" onClick={() => {
     const el = document.getElementById("contact");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }}>
-            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full mr-2 animate-pulse" />
+            <span className="w-1.5 h-1.5 bg-fuchsia-400 rounded-full mr-2 animate-pulse shadow-[0_0_8px_#d946ef]" />
             Collaborate 
           </div>
           <h2 className="text-4xl md:text-6xl font-black mb-5 leading-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-fuchsia-200 to-purple-500 drop-shadow-sm">
               My Projects
             </span>
           </h2>
